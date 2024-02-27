@@ -81,7 +81,7 @@ exports.createRequest = async (req, res) => {
         dateNeeded: req.body.dateNeeded,
         purpose: req.body.purpose,
         fileName: req.file.filename,
-        filePath: "http://localhost:4000/img/" + req.file.filename,
+        filePath: "https://pbc-api.onrender.com/img/" + req.file.filename,
       });
       await newRequest.save();
       checkId.requestList.push(newRequest);
@@ -122,7 +122,7 @@ exports.updatePayment = async (req, res) => {
       { _id: req.params.id },
       {
         proof: req.file.filename,
-        proofPath: "http://localhost:4000/img/" + req.file.filename,
+        proofPath: "https://pbc-api.onrender.com/img/" + req.file.filename,
       },
       {
         new: true,
