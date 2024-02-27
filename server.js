@@ -28,8 +28,10 @@ app.use(
       "http://localhost:3000",
       "http://localhost:8080",
       "http://localhost:5173",
+      "https://ictportal.vercel.app",
       "http://localhost:5174",
-      "https://online-document-request-system.vercel.app/",
+      "https://ictportaledu.vercel.app",
+      "https://online-document-request-system.vercel.app",
     ],
     credentials: true,
   })
