@@ -155,6 +155,32 @@ exports.updateStatusReject = async (req, res) => {
     });
   }
 };
+exports.updateStatusWaiting = async (req, res) => {
+  try {
+    const updatedData = await Request.findByIdAndUpdate(
+      req.params.id,
+      {
+        status: "Waiting to pickup",
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    if (!updatedData) {
+      return res.status(409).json({
+        message: "Id not exist",
+      });
+    }
+    res.status(200).json({
+      message: updatedData,
+    });
+  } catch (err) {
+    res.status(400).json({
+      message: err,
+    });
+  }
+};
 exports.updateStatusCompleted = async (req, res) => {
   try {
     const updatedData = await Request.findByIdAndUpdate(
