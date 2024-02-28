@@ -12,7 +12,7 @@ const requestSchema = new mongoose.Schema(
     },
     dateCreated: {
       type: String,
-      default: "",
+      default: getDateValue(),
     },
     documentType: {
       type: String,
