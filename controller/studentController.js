@@ -36,12 +36,14 @@ exports.registerAccount = async (req, res) => {
 exports.login = async (req, res) => {
   const { learnerReferenceNumber, password } = req.body;
 
+  console.log(learnerReferenceNumber);
   const checkUser = await User.findOne({ learnerReferenceNumber }).exec();
   if (!checkUser) {
     return res.status(401).json({
       message: "LRN is not registered",
     });
   }
+  console.log(checkUser);
   const passwordMatch = await bcrypt.compare(password, checkUser.password);
 
   if (!passwordMatch) {
@@ -62,7 +64,7 @@ exports.login = async (req, res) => {
     maxAge: 24 * 60 * 60 * 1000,
   });
   return res.status(200).json({
-    message: "Login sucess",
+    message: "Access granted",
   });
 };
 exports.createRequest = async (req, res) => {

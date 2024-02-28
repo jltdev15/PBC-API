@@ -66,7 +66,7 @@ const requestSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    comments: {
+    remarks: {
       type: String,
       default: "",
     },

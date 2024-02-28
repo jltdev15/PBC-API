@@ -22,4 +22,5 @@ router.patch("/processing/:id", adminController.updateStatusProcessed);
 router.patch("/schedule/:id", adminController.updatePickUpDate);
 router.patch("/waiting/:id", adminController.updateStatusWaiting);
 router.patch("/complete/:id", adminController.updateStatusCompleted);
+router.patch("/rejected/:id", adminController.updateRejectRemarks);
 module.exports = router;

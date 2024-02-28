@@ -25,13 +25,14 @@ exports.register = async (req, res) => {
 };
 exports.login = async (req, res) => {
   const { userName, password } = req.body;
-
+  console.log(req.body);
   const checkUser = await Admin.findOne({ userName }).exec();
   if (!checkUser) {
     return res.status(401).json({
       message: "Username is not registered",
     });
   }
+  console.log("username is correct");
   const passwordMatch = await bcrypt.compare(password, checkUser.password);
 
   if (!passwordMatch) {
@@ -61,7 +62,9 @@ exports.logout = async (req, res) => {
 };
 exports.getRequests = async (req, res) => {
   try {
-    const requestData = await Request.find().exec();
+    const requestData = await Request.find()
+      .sort({ status: "descending" })
+      .exec();
     if (!requestData) {
       res.status(404).json({
         message: "Request empty",
@@ -108,7 +111,6 @@ exports.updateStatusApproved = async (req, res) => {
       req.params.id,
       {
         status: "Approved",
-        proof: "Waiting for payment",
       },
       {
         new: true,
@@ -228,7 +230,27 @@ exports.updatePickUpDate = async (req, res) => {
     });
   }
 };
-
+exports.updateRejectRemarks = async (req, res) => {
+  console.log(req.body);
+  try {
+    const updatedData = await Request.findByIdAndUpdate(
+      req.params.id,
+      req.body
+    );
+    if (!updatedData) {
+      return res.status(409).json({
+        message: "Id not exist",
+      });
+    }
+    res.status(200).json({
+      message: updatedData,
+    });
+  } catch (err) {
+    res.status(400).json({
+      message: err,
+    });
+  }
+};
 exports.getUserLoggedIn = async (req, res) => {
   console.log(req.user);
   try {
