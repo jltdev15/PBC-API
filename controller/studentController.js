@@ -94,7 +94,7 @@ exports.createRequest = async (req, res) => {
       });
     } else {
       const newRequest = new Request({
-        learnerReferenceNumber: "123456789",
+        learnerReferenceNumber: id,
         requestorName: checkId.fullName,
         documentType: req.body.documentType,
         year: req.body.year,
