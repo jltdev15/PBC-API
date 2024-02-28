@@ -77,6 +77,7 @@ exports.createRequest = async (req, res) => {
         learnerReferenceNumber: id,
         requestorName: checkId.fullName,
         documentType: req.body.documentType,
+        dateCreated: req.body.dateCreated,
         year: req.body.year,
         dateNeeded: req.body.dateNeeded,
         purpose: req.body.purpose,
