@@ -33,6 +33,7 @@ exports.registerAccount = async (req, res) => {
     console.log(err);
   }
 };
+
 exports.login = async (req, res) => {
   const { learnerReferenceNumber, password } = req.body;
 
@@ -85,6 +86,7 @@ exports.createRequest = async (req, res) => {
         purpose: req.body.purpose,
         fileName: req.file.filename,
         filePath: "https://pbc-api.onrender.com/img/" + req.file.filename,
+        // filePath: "http://localhost:4000/public/img/" + req.file.filename,
       });
       await newRequest.save();
       checkId.requestList.push(newRequest);
@@ -97,6 +99,7 @@ exports.createRequest = async (req, res) => {
         learnerReferenceNumber: id,
         requestorName: checkId.fullName,
         documentType: req.body.documentType,
+        dateCreated: req.body.dateCreated,
         year: req.body.year,
         dateNeeded: req.body.dateNeeded,
         purpose: req.body.purpose,
@@ -117,8 +120,6 @@ exports.createRequest = async (req, res) => {
 
 exports.updatePayment = async (req, res) => {
   const id = req.user.learnerReferenceNumber;
-  console.log(id);
-  console.log(req.file);
 
   try {
     const updatedData = await Request.findOneAndUpdate(
@@ -182,4 +183,62 @@ exports.getStudentLoggedIn = async (req, res) => {
       errorMessage: err,
     });
   }
+};
+exports.studentLogout = async (req, res) => {
+  await res.clearCookie("jwt", {
+    httpOnly: true,
+    sameSite: "None",
+    secure: true,
+  });
+  await res.sendStatus(204);
+};
+exports.updatePassword = async (req, res) => {
+  console.log(req.params.id);
+  const studentData = await User.findOne({
+    learnerReferenceNumber: req.params.id,
+  });
+  const { password, ...data } = studentData.toJSON();
+  console.log(password);
+  if (!(await bcrypt.compare(req.body.currentPassword, password))) {
+    return res.status(401).json({
+      message: "Current password incorrect!",
+    });
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const newhashedPassword = await bcrypt.hash(req.body.newPassword, salt);
+  const query = { password: password };
+  const updatedPassword = await User.findOneAndUpdate(
+    query,
+    { password: newhashedPassword },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  if (!updatedPassword) {
+    return res.send({
+      message: "Password not updated",
+    });
+  }
+  return res.status(201).json({
+    message: "Password changed!",
+  });
+};
+exports.updateProfile = async (req, res) => {
+  console.log(req.body);
+  console.log(req.params.id);
+  const query = { learnerReferenceNumber: req.params.id };
+  const updatedPassword = await User.findOneAndUpdate(query, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  if (!updatedPassword) {
+    return res.send({
+      message: "Profile not updated",
+    });
+  }
+  return res.status(201).json({
+    message: "Profile Updated!",
+  });
 };

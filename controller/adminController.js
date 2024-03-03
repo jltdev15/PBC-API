@@ -57,12 +57,16 @@ exports.login = async (req, res) => {
   });
 };
 exports.logout = async (req, res) => {
-  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
-  res.sendStatus(204);
+  await res.clearCookie("jwt", {
+    httpOnly: true,
+    sameSite: "None",
+    secure: true,
+  });
+  await res.sendStatus(204);
 };
 exports.getRequests = async (req, res) => {
   try {
-    const requestData = await Request.find()
+    const requestData = await Request.find({ status: { $ne: "Archive" } })
       .sort({ status: "descending" })
       .exec();
     if (!requestData) {
@@ -209,6 +213,32 @@ exports.updateStatusCompleted = async (req, res) => {
     });
   }
 };
+exports.updateStatusArchive = async (req, res) => {
+  try {
+    const updatedData = await Request.findByIdAndUpdate(
+      req.params.id,
+      {
+        status: "Archive",
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    if (!updatedData) {
+      return res.status(409).json({
+        message: "Id not exist",
+      });
+    }
+    res.status(200).json({
+      message: updatedData,
+    });
+  } catch (err) {
+    res.status(400).json({
+      message: err,
+    });
+  }
+};
 exports.updatePickUpDate = async (req, res) => {
   console.log(req.body);
   try {
@@ -265,6 +295,25 @@ exports.getUserLoggedIn = async (req, res) => {
   } catch (err) {
     res.status(401).json({
       errorMessage: err,
+    });
+  }
+};
+exports.getArchiveRequests = async (req, res) => {
+  try {
+    const requestData = await Request.find({
+      status: { $eq: "Archive" },
+    }).exec();
+    if (!requestData) {
+      res.status(404).json({
+        message: "Request empty",
+      });
+    }
+    res.status(200).json({
+      content: requestData,
+    });
+  } catch (err) {
+    res.status(409).json({
+      message: err,
     });
   }
 };

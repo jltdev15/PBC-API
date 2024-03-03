@@ -22,6 +22,7 @@ router.get(
 );
 router.post("/register", studentController.registerAccount);
 router.post("/login", studentController.login);
+router.post("/logout", studentController.studentLogout);
 router.post(
   "/create",
   authController.verifyTokenStudent,
@@ -34,9 +35,11 @@ router.patch(
   upload.single("proof"),
   studentController.updatePayment
 );
+router.patch("/changepassword/:id", studentController.updatePassword);
 router.get(
   "/active_student",
   authController.verifyTokenStudent,
   studentController.getStudentLoggedIn
 );
+router.patch("/updateprofile/:id", studentController.updateProfile);
 module.exports = router;

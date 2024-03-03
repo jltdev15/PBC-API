@@ -12,7 +12,8 @@ const requestSchema = new mongoose.Schema(
     },
     dateCreated: {
       type: String,
-      default: getDateValue(),
+      default: "",
+      // default: getDateValue(),
     },
     documentType: {
       type: String,
@@ -67,6 +68,10 @@ const requestSchema = new mongoose.Schema(
       default: "",
     },
     remarks: {
+      type: String,
+      default: "",
+    },
+    others: {
       type: String,
       default: "",
     },
