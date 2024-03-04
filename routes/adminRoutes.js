@@ -11,6 +11,7 @@ router.get(
 router.post("/register", adminController.register);
 router.post("/login", adminController.login);
 router.post("/logout", adminController.logout);
+router.post("/addlrn", adminController.addLearnerReferenceNumber);
 router.get(
   "/requests",
   authController.verifyToken,
@@ -29,4 +30,6 @@ router.patch("/waiting/:id", adminController.updateStatusWaiting);
 router.patch("/complete/:id", adminController.updateStatusCompleted);
 router.patch("/rejected/:id", adminController.updateRejectRemarks);
 router.patch("/archive/:id", adminController.updateStatusArchive);
+router.patch("/changepassword/:id", adminController.updateAdminPassword);
+router.patch("/changeusername/:id", adminController.updateAdminUserName);
 module.exports = router;

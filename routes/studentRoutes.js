@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const studentController = require("../controller/studentController");
 const authController = require("../middleware/authController");
+const errorController = require("../middleware/errorController");
 const router = express.Router();
 
 // const upload = multer({ dest: "public/img/proof" });
@@ -20,7 +21,11 @@ router.get(
   authController.verifyTokenStudent,
   studentController.getAllRequest
 );
-router.post("/register", studentController.registerAccount);
+router.post(
+  "/register",
+  errorController.checkLRN,
+  studentController.registerAccount
+);
 router.post("/login", studentController.login);
 router.post("/logout", studentController.studentLogout);
 router.post(

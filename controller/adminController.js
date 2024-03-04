@@ -2,7 +2,7 @@ require("dotenv").config({ path: "/config.env" });
 
 const Admin = require("../model/AdminModel");
 const Request = require("../model/RequestModel");
-
+const Learner = require("../model/LearnerModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -287,9 +287,10 @@ exports.getUserLoggedIn = async (req, res) => {
     const responseData = await Admin.findOne({
       userName: req.user.userName,
     });
+    const { password, ...data } = responseData.toJSON();
     if (responseData) {
       return res.status(200).json({
-        content: responseData,
+        content: data,
       });
     }
   } catch (err) {
@@ -316,4 +317,84 @@ exports.getArchiveRequests = async (req, res) => {
       message: err,
     });
   }
+};
+
+exports.addLearnerReferenceNumber = async (req, res) => {
+  try {
+    const newLrn = new Learner({
+      learnerReferenceNumber: req.body.lrn,
+    });
+    await newLrn.save();
+    res.status(200).json({
+      content: newLrn,
+    });
+  } catch (err) {
+    res.status(400).json({
+      content: err,
+    });
+  }
+};
+exports.updateAdminPassword = async (req, res) => {
+  console.log(req.params.id);
+  const foundData = await Admin.findOne({
+    userName: req.params.id,
+  });
+  const { password, ...data } = foundData.toJSON();
+  console.log(password);
+  if (!(await bcrypt.compare(req.body.currentPassword, password))) {
+    return res.status(401).json({
+      message: "Current password incorrect!",
+    });
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const newhashedPassword = await bcrypt.hash(req.body.newPassword, salt);
+  const query = { password: password };
+  const updatedPassword = await Admin.findOneAndUpdate(
+    query,
+    { password: newhashedPassword },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  if (!updatedPassword) {
+    return res.send({
+      message: "Password not updated",
+    });
+  }
+  return res.status(201).json({
+    message: "Password changed!",
+  });
+};
+exports.updateAdminUserName = async (req, res) => {
+  console.log(req.params.id);
+  const foundData = await Admin.findOne({
+    userName: req.params.id,
+  });
+  const { userName, ...data } = foundData.toJSON();
+  console.log(userName);
+  if (userName !== req.body.currentUsername) {
+    return res.status(401).json({
+      message: "Current username incorrect!",
+    });
+  }
+
+  const query = { userName: userName };
+  const updatedUsername = await Admin.findOneAndUpdate(
+    query,
+    { userName: req.body.newUserName },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  if (!updatedUsername) {
+    return res.send({
+      message: "Username not updated",
+    });
+  }
+  return res.status(201).json({
+    message: "Username changed!",
+  });
 };
