@@ -82,7 +82,7 @@ exports.createRequest = async (req, res) => {
         documentType: req.body.documentType,
         dateCreated: req.body.dateCreated,
         year: req.body.year,
-        dateNeeded: req.body.dateNeeded,
+        processingDays: req.body.processingDays,
         purpose: req.body.purpose,
         fileName: req.file.filename,
         filePath: "https://pbc-api.onrender.com/img/" + req.file.filename,
@@ -101,7 +101,7 @@ exports.createRequest = async (req, res) => {
         documentType: req.body.documentType,
         dateCreated: req.body.dateCreated,
         year: req.body.year,
-        dateNeeded: req.body.dateNeeded,
+        processingDays: req.body.processingDays,
         purpose: req.body.purpose,
       });
       await newRequest.save();

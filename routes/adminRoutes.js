@@ -8,19 +8,26 @@ router.get(
   authController.verifyToken,
   adminController.getUserLoggedIn
 );
+
 router.post("/register", adminController.register);
 router.post("/login", adminController.login);
 router.post("/logout", adminController.logout);
 router.post("/addlrn", adminController.addLearnerReferenceNumber);
+
 router.get(
   "/requests",
-  authController.verifyToken,
+  // authController.verifyToken,
   adminController.getRequests
 );
 router.get(
   "/archiveRequests",
-  authController.verifyToken,
+  // authController.verifyToken,
   adminController.getArchiveRequests
+);
+router.get(
+  "/export",
+  // authController.verifyToken,
+  adminController.exportRequest
 );
 router.patch("/approved/:id", adminController.updateStatusApproved);
 router.patch("/reject/:id", adminController.updateStatusReject);
@@ -32,4 +39,10 @@ router.patch("/rejected/:id", adminController.updateRejectRemarks);
 router.patch("/archive/:id", adminController.updateStatusArchive);
 router.patch("/changepassword/:id", adminController.updateAdminPassword);
 router.patch("/changeusername/:id", adminController.updateAdminUserName);
+
+// Registrar routes
+router.post("/registrar", adminController.createRegistrarAccount);
+router.get("/users", adminController.getAllUsers);
+router.delete("/users/:id", adminController.deleteUser);
+router.patch("/users/:id", adminController.updateUserInfo);
 module.exports = router;

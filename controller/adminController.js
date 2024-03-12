@@ -1,10 +1,12 @@
 require("dotenv").config({ path: "/config.env" });
 
+const Registrar = require("../model/RegistrarModel");
 const Admin = require("../model/AdminModel");
 const Request = require("../model/RequestModel");
 const Learner = require("../model/LearnerModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const excel = require("exceljs");
 
 exports.register = async (req, res) => {
   const { userName, password } = req.body;
@@ -318,7 +320,6 @@ exports.getArchiveRequests = async (req, res) => {
     });
   }
 };
-
 exports.addLearnerReferenceNumber = async (req, res) => {
   try {
     const newLrn = new Learner({
@@ -397,4 +398,173 @@ exports.updateAdminUserName = async (req, res) => {
   return res.status(201).json({
     message: "Username changed!",
   });
+};
+exports.exportRequest = async (req, res) => {
+  try {
+    const archiveData = await Request.find({ status: "Archive" }).lean();
+
+    const workBook = new excel.Workbook();
+    const workSheet = workBook.addWorksheet("Request");
+
+    workSheet.columns = [
+      {
+        header: "Learner Reference Number",
+        key: "learnerReferenceNumber",
+        type: "number",
+        width: 30,
+      },
+      {
+        header: "Name",
+        key: "requestorName",
+        width: 30,
+      },
+      {
+        header: "Date Requested",
+        size: 16,
+        key: "dateCreated",
+        width: 30,
+      },
+      {
+        header: "Type of document",
+        key: "documentType",
+        width: 30,
+      },
+      {
+        header: "Purpose of Request",
+        key: "purpose",
+        width: 30,
+      },
+      {
+        header: "Pick up date",
+        key: "pickUpDate",
+        width: 30,
+      },
+      {
+        header: "Status",
+        key: "status",
+        width: 30,
+      },
+    ];
+    workSheet.getRow(1).font = { bold: true, color: { argb: "FFFFFF" } };
+    workSheet.getRow(1).alignment = { horizontal: "center" };
+    workSheet.getRow(1).fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "ffffff" },
+    };
+    archiveData.forEach((item) => {
+      workSheet.addRow(item);
+    });
+    const style = {
+      font: {
+        size: 16,
+        bold: true,
+      },
+      border: {
+        top: { style: "thin" },
+        left: { style: "thin" },
+        bottom: { style: "thin" },
+        right: { style: "thin" },
+      },
+    };
+
+    // Apply style to all cells
+    workSheet.eachRow((row, rowNumber) => {
+      row.eachCell((cell) => {
+        cell.font = style.font;
+        cell.border = style.border;
+      });
+    });
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=Archived-Request.xlsx"
+    );
+    await workBook.xlsx.write(res);
+  } catch (err) {
+    res.status(400).json({
+      content: err,
+    });
+  }
+};
+exports.createRegistrarAccount = async (req, res) => {
+  console.log(req.body);
+  try {
+    const newAccount = new Registrar(req.body);
+    await newAccount.save();
+    res.status(201).json({
+      status: "Success",
+      content: newAccount,
+    });
+  } catch (err) {
+    res.status(404).json({
+      content: err,
+    });
+  }
+};
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await Registrar.find().exec();
+
+    if (!users) {
+      res.status(404).json({
+        content: "No users found",
+      });
+    }
+    return res.status(200).json({
+      content: users,
+    });
+  } catch (err) {
+    res.status(400).json({
+      content: err,
+    });
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const deletedUser = await Registrar.findByIdAndDelete(req.params.id);
+    if (!deletedUser) {
+      return res.status(404).json({
+        message: "Account not found",
+      });
+    }
+    res.status(204).json({
+      message: "Account deleted!",
+    });
+  } catch (err) {
+    res.status(404).json({
+      content: err,
+    });
+  }
+};
+exports.updateUserInfo = async (req, res) => {
+  console.log(req.params.id);
+  console.log(req.body);
+  try {
+    const updatedData = await Registrar.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    if (!updatedData) {
+      return res.status(409).json({
+        message: "Id not exist",
+      });
+    }
+    res.status(200).json({
+      message: updatedData,
+    });
+  } catch (err) {
+    res.status(400).json({
+      message: err,
+    });
+  }
 };

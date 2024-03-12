@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const requestSchema = new mongoose.Schema(
   {
     learnerReferenceNumber: {
-      type: Number,
+      type: String,
       required: true,
     },
     requestorName: {
@@ -23,7 +23,7 @@ const requestSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    dateNeeded: {
+    processingDays: {
       type: String,
       required: true,
     },

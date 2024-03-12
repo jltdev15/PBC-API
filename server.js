@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const studentRoutes = require("./routes/studentRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const registrarRoutes = require("./routes/registrarRoutes");
 require("dotenv").config({ path: "config.env" });
 const port = process.env.PORT || 3000;
 const db = process.env.DATABASE_URI;
@@ -28,9 +29,6 @@ app.use(
       "http://localhost:3000",
       "http://localhost:8080",
       "http://localhost:5173",
-      "https://ictportal.vercel.app",
-      "http://localhost:5174",
-      "https://ictportaledu.vercel.app",
       "https://online-document-request-system.vercel.app",
     ],
     credentials: true,
@@ -38,10 +36,16 @@ app.use(
 );
 app.options("*", cors());
 
-app.use("/v1/api", studentRoutes);
 app.use("/v1/api/admin", adminRoutes);
+app.use("/v1/api/registrar", registrarRoutes);
+app.use("/v1/api", studentRoutes);
 
-mongoose.connect(db).then(() => console.log("Connected to Database!"));
+mongoose
+  .connect(db)
+  .then(() => console.log("Connected to Database!"))
+  .catch((err) => {
+    console.log(err);
+  });
 
 app.listen(port, () => {
   console.log("====================================");
