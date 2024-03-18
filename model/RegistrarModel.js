@@ -1,25 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const regUserSchema = new mongoose.Schema({
-  employeeID: {
-    type: Number,
-    required: true,
-  },
-  fullName: {
-    type: String,
-    required: true,
-  },
-  emailAddress: {
-    type: String,
-    required: true,
-    // unique: true,
-    // lowercase: true,
-    // validate: [validator.isEmail, "Please provide a valid email"],
-  },
-  contactNumber: {
-    type: Number,
-    required: true,
-  },
   userName: {
     type: String,
     required: true,
